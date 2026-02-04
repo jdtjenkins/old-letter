@@ -110,7 +110,7 @@ export function Letter() {
 						onInput={(e) => {
 							updateQueryParam(e.currentTarget.innerText.split("\n"));
 						}}
-					>{getTextFromUrl()}</div>
+					>{getTextFromUrl().join("\n")}</div>
 				</Show>
 			</div>
 
