@@ -1,17 +1,17 @@
 ---
-
+import { Font } from "astro:assets"
+import "../styles/global.css";
+import { Letter } from '../components/Letter'
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Letter</title>
+	<Font cssVariable="--font-lovers-quarrel" preload />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <Letter client:only="solid-js" />
+  </body>
 </html>
