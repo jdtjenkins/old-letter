@@ -12,7 +12,6 @@ export function Letter() {
 	const [editMode, setEditMode] = createSignal(false);
 
 	const updateQueryParam = (newLines: string[]) => {
-		console.log(newLines);
 		const url = new URL(window.location.href);
 		url.searchParams.set("text", newLines.join("§"));
 		window.history.replaceState({}, "", url);
