@@ -20,6 +20,13 @@ export default defineConfig({
         cssVariable: "--font-lovers-quarrel",
 		weights: ["400"],
 		styles: ["normal"],
+      },
+	  {
+        provider: fontProviders.google(),
+        name: "Cinzel",
+        cssVariable: "--font-cinzel",
+		weights: ["400"],
+		styles: ["normal"],
       }
     ]
   }

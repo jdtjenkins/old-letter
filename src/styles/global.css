@@ -1,1 +1,58 @@
 @import "tailwindcss";
+
+.font-main {
+	font-family: var(--font-cinzel);
+}
+
+body {
+	margin: 0;
+}
+
+.letter-page {
+	min-height: 100vh;
+	min-height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	background: linear-gradient(135deg, #e9dcbf, #e5cda2);
+	color: #3d2c20;
+}
+
+.letter-editor:focus-visible {
+	outline: 2px solid #8b5d36;
+	outline-offset: 3px;
+}
+
+.letter-content {
+	width: min(100%, 1120px);
+	flex: 1;
+	margin: 0 auto;
+	padding: 32px 40px 64px;
+	font-size: clamp(1.5rem, 2.5vw, 1.875rem);
+	line-height: 1.8;
+	white-space: pre-wrap;
+}
+
+.letter-content p {
+	min-height: 1.8em;
+}
+
+.letter-editor {
+	width: 100%;
+	min-height: 60vh;
+	padding: 12px;
+	border: 1px dashed rgba(91, 61, 36, 0.45);
+	border-radius: 3px;
+	outline: none;
+}
+
+.letter-editor:empty::before {
+	content: attr(data-placeholder);
+	color: rgba(61, 44, 32, 0.48);
+	pointer-events: none;
+}
+
+@media (max-width: 600px) {
+	.letter-content {
+		padding: 24px 20px 48px;
+	}
+}
