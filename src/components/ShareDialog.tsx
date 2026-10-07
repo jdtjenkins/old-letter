@@ -107,6 +107,10 @@ export function ShareDialog(props: ShareDialogProps) {
 						<textarea id="share-url" class="min-h-12 min-w-0 flex-1 resize-none rounded border border-[#8b6842]/50 bg-[#fff8e8] px-3 py-2 text-sm leading-5 text-[#513528] focus-visible:outline-2 focus-visible:outline-[#8b5d36]" rows="2" readOnly value={props.url} onFocus={event => event.currentTarget.select()} />
 						<button class="min-h-12 shrink-0 rounded border border-[#8b6842] bg-[#513528] px-3 font-[family-name:var(--font-cinzel)] text-xs font-semibold tracking-[0.06em] text-[#f8e9c9] uppercase hover:bg-[#694534] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b5d36]" type="button" onClick={() => copy(props.url, setUrlCopied, "Could not copy the link. Select the URL and copy it manually.")}>{urlCopied() ? "Copied" : "Copy"}</button>
 					</div>
+					<p class="text-xs leading-5 text-[#674a35]">{props.url.length.toLocaleString()} characters</p>
+					<Show when={props.url.length >= 2000}>
+						<p class="text-xs leading-5 text-[#8a3328]">This letter is too long for a standard Discord message. You can still send the encrypted text below or download the PDF.</p>
+					</Show>
 				</div>
 				<button class="inline-flex min-h-11 items-center gap-2 rounded border border-[#8b6842] bg-[#f4e6c9] px-4 font-[family-name:var(--font-cinzel)] text-xs font-semibold tracking-[0.06em] text-[#513528] uppercase hover:bg-[#ead6ae] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b5d36] disabled:cursor-wait disabled:opacity-60" type="button" disabled={downloadingPdf()} onClick={downloadPdf}>
 					<svg class="h-4 w-4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-4-4 4 4 4-4M5 18v3h14v-3" /></svg>
