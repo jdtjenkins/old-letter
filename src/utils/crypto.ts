@@ -10,13 +10,15 @@ const toBase64Url = (bytes: Uint8Array): string => {
 	return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 };
 
-const fromBase64Url = (value: string): Uint8Array => {
+const fromBase64Url = (value: string): Uint8Array<ArrayBuffer> => {
 	if (!/^[A-Za-z0-9_-]+$/.test(value)) throw new Error("Invalid encrypted letter");
 	const binary = atob(value.replace(/-/g, "+").replace(/_/g, "/"));
-	return Uint8Array.from(binary, character => character.charCodeAt(0));
+	const bytes = new Uint8Array(binary.length);
+	for (let index = 0; index < binary.length; index++) bytes[index] = binary.charCodeAt(index);
+	return bytes;
 };
 
-const deriveKey = async (password: string, salt: Uint8Array, usage: KeyUsage): Promise<CryptoKey> => {
+const deriveKey = async (password: string, salt: Uint8Array<ArrayBuffer>, usage: KeyUsage): Promise<CryptoKey> => {
 	const passwordKey = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveKey"]);
 	return crypto.subtle.deriveKey(
 		{ name: "PBKDF2", salt, iterations: ITERATIONS, hash: "SHA-256" },
