@@ -1,10 +1,13 @@
-import { createSignal, onCleanup, onMount, untrack, For, Show } from "solid-js";
+import { createSignal, lazy, onCleanup, onMount, Show, Suspense } from "solid-js";
 import { ImportDialog } from "./ImportDialog";
 import { LetterNav } from "./LetterNav";
+import { MarkdownView } from "./MarkdownView";
+import { NewLetterDialog } from "./NewLetterDialog";
 import { ShareDialog } from "./ShareDialog";
 import { clearLetterFromUrl, getLetterLinesFromUrl, setLetterLinesInUrl, shareUrlForLines } from "../utils/letterUrl";
 
 const wait = (milliseconds: number) => new Promise(resolve => setTimeout(resolve, milliseconds));
+const MarkdownEditor = lazy(() => import("./MarkdownEditor").then(module => ({ default: module.MarkdownEditor })));
 
 export function Letter() {
 	const [lines, setLines] = createSignal<string[]>([""]);
@@ -12,7 +15,8 @@ export function Letter() {
 	const [importedBody, setImportedBody] = createSignal<string | null>(null);
 	const [shareSnapshot, setShareSnapshot] = createSignal<{ body: string; url: string } | null>(null);
 	const [importOpen, setImportOpen] = createSignal(false);
-	let editor: HTMLDivElement | undefined;
+	const [newLetterConfirmOpen, setNewLetterConfirmOpen] = createSignal(false);
+	const [editorReset, setEditorReset] = createSignal(0);
 	let typingRun = 0;
 	let removeSkipListener: (() => void) | undefined;
 
@@ -78,8 +82,6 @@ export function Letter() {
 		}
 	};
 
-	const focusEditor = () => requestAnimationFrame(() => editor?.focus());
-
 	const toggleEditMode = () => {
 		if (editMode()) {
 			setEditMode(false);
@@ -87,7 +89,6 @@ export function Letter() {
 		} else {
 			stopTyping();
 			setEditMode(true);
-			focusEditor();
 		}
 	};
 
@@ -96,9 +97,18 @@ export function Letter() {
 		setLetterLinesInUrl([""]);
 		stopTyping();
 		setLines([""]);
-		if (editMode() && editor) editor.textContent = "";
-		else setEditMode(true);
-		focusEditor();
+		setEditorReset(value => value + 1);
+		setEditMode(true);
+	};
+
+	const requestNewLetter = () => {
+		if (currentLetterLines().join("\n").trim()) setNewLetterConfirmOpen(true);
+		else newLetter();
+	};
+
+	const confirmNewLetter = () => {
+		setNewLetterConfirmOpen(false);
+		newLetter();
 	};
 
 	const importLetter = (body: string) => {
@@ -118,30 +128,27 @@ export function Letter() {
 
 	return (
 		<div class="letter-page">
-			<LetterNav editing={editMode()} onEdit={toggleEditMode} onNew={newLetter} onImport={() => setImportOpen(true)} onShare={openShareDialog} />
+			<LetterNav editing={editMode()} onEdit={toggleEditMode} onNew={requestNewLetter} onImport={() => setImportOpen(true)} onShare={openShareDialog} />
 			<main class="letter-content font-main">
 				<Show when={!editMode()}>
-					<For each={lines()}>{line => <p class="block min-h-8">{line}</p>}</For>
+					<MarkdownView source={lines().join("\n")} />
 				</Show>
 				<Show when={editMode()}>
-					<div
-						ref={element => { editor = element; }}
-						class="letter-editor"
-						contentEditable
-						role="textbox"
-						aria-label="Letter text"
-						aria-multiline="true"
-						data-placeholder="Write your letter here…"
-						onInput={event => {
-							const text = event.currentTarget.innerText;
-							if (importedBody() === null) setLetterLinesInUrl(text.split("\n"));
-							else setImportedBody(text);
-						}}
-					>{untrack(() => currentLetterLines().join("\n"))}</div>
+					<Suspense fallback={<p class="text-base">Preparing editor…</p>}>
+						<MarkdownEditor
+							initialValue={currentLetterLines().join("\n")}
+							resetKey={editorReset()}
+							onChange={value => {
+								if (importedBody() === null) setLetterLinesInUrl(value.split("\n"));
+								else setImportedBody(value);
+							}}
+						/>
+					</Suspense>
 				</Show>
 			</main>
 			<ShareDialog open={shareSnapshot() !== null} body={shareSnapshot()?.body ?? ""} url={shareSnapshot()?.url ?? ""} onClose={() => setShareSnapshot(null)} />
 			<ImportDialog open={importOpen()} onClose={() => setImportOpen(false)} onImport={importLetter} />
+			<NewLetterDialog open={newLetterConfirmOpen()} onClose={() => setNewLetterConfirmOpen(false)} onConfirm={confirmNewLetter} />
 		</div>
 	);
 }

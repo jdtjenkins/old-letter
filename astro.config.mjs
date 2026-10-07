@@ -25,8 +25,15 @@ export default defineConfig({
         provider: fontProviders.google(),
         name: "Cinzel",
         cssVariable: "--font-cinzel",
-		weights: ["400"],
-		styles: ["normal"],
+		weights: ["400", "500", "600"],
+		styles: ["normal", "italic"],
+      },
+	  {
+        provider: fontProviders.google(),
+        name: "IM Fell English",
+        cssVariable: "--font-im-fell",
+		weights: ["400", "500", "600"],
+		styles: ["normal", "italic"],
       }
     ]
   }

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .font-main {
-	font-family: var(--font-cinzel);
+	font-family: var(--font-im-fell);
 }
 
 body {
@@ -17,11 +17,6 @@ body {
 	color: #3d2c20;
 }
 
-.letter-editor:focus-visible {
-	outline: 2px solid #8b5d36;
-	outline-offset: 3px;
-}
-
 .letter-content {
 	width: min(100%, 1120px);
 	flex: 1;
@@ -29,26 +24,125 @@ body {
 	padding: 32px 40px 64px;
 	font-size: clamp(1.5rem, 2.5vw, 1.875rem);
 	line-height: 1.8;
-	white-space: pre-wrap;
+	white-space: normal;
 }
 
-.letter-content p {
-	min-height: 1.8em;
+.letter-markdown {
+	overflow-wrap: anywhere;
 }
 
-.letter-editor {
-	width: 100%;
-	min-height: 60vh;
-	padding: 12px;
-	border: 1px dashed rgba(91, 61, 36, 0.45);
+.letter-markdown > :first-child {
+	margin-top: 0;
+}
+
+.letter-markdown p {
+	margin: 0 0 0.9em;
+	white-space: pre-line;
+}
+
+.letter-markdown h1,
+.letter-markdown h2,
+.letter-markdown h3,
+.letter-markdown h4 {
+	margin: 1.2em 0 0.5em;
+	font-weight: 600;
+	line-height: 1.35;
+}
+
+.letter-markdown h1 { font-size: 1.5em; }
+.letter-markdown h2 { font-size: 1.25em; }
+.letter-markdown h3 { font-size: 1.1em; }
+
+.letter-markdown ul,
+.letter-markdown ol {
+	margin: 0 0 0.9em;
+	padding-left: 1.5em;
+}
+
+.letter-markdown ul { list-style: disc; }
+.letter-markdown ol { list-style: decimal; }
+.letter-markdown li { padding-left: 0.15em; }
+.letter-markdown li > p { margin-bottom: 0.3em; }
+
+.letter-markdown blockquote {
+	margin: 1em 0;
+	padding: 0.15em 0 0.15em 0.9em;
+	border-left: 3px solid #a57b4c;
+	color: #684a35;
+	font-style: italic;
+}
+
+.letter-markdown blockquote p:last-child { margin-bottom: 0; }
+
+.letter-markdown a {
+	color: #74452f;
+	text-decoration: underline;
+	text-underline-offset: 0.15em;
+}
+
+.letter-markdown a:hover { color: #9a5a39; }
+
+.letter-markdown code {
+	padding: 0.08em 0.25em;
 	border-radius: 3px;
+	background: rgba(95, 65, 42, 0.12);
+	font-family: ui-monospace, monospace;
+	font-size: 0.78em;
+}
+
+.letter-markdown pre {
+	margin: 1em 0;
+	padding: 0.8em 1em;
+	overflow-x: auto;
+	border-radius: 4px;
+	background: #3d3029;
+	color: #f5e6c8;
+	font-size: 0.7em;
+	line-height: 1.5;
+}
+
+.letter-markdown pre code {
+	padding: 0;
+	background: none;
+	color: inherit;
+	font-size: inherit;
+}
+
+.letter-markdown hr {
+	margin: 1.5em 0;
+	border: 0;
+	border-top: 1px solid rgba(91, 61, 36, 0.4);
+}
+
+.letter-markdown img { max-width: 100%; }
+
+.letter-markdown table {
+	display: block;
+	max-width: 100%;
+	margin: 1em 0;
+	overflow-x: auto;
+	border-collapse: collapse;
+	font-size: 0.75em;
+}
+
+.letter-markdown th,
+.letter-markdown td {
+	padding: 0.35em 0.6em;
+	border: 1px solid rgba(91, 61, 36, 0.35);
+}
+
+.letter-markdown th { background: rgba(95, 65, 42, 0.1); }
+
+.letter-markdown input[type="checkbox"] { margin-right: 0.4em; }
+
+.letter-rich-editor .tiptap {
+	min-height: 60vh;
 	outline: none;
 }
 
-.letter-editor:empty::before {
-	content: attr(data-placeholder);
-	color: rgba(61, 44, 32, 0.48);
-	pointer-events: none;
+.letter-rich-editor .tiptap:focus-visible {
+	outline: 2px solid #8b5d36;
+	outline-offset: 5px;
 }
 
 @media (max-width: 600px) {
