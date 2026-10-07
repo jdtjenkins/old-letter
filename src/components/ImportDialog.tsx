@@ -8,6 +8,9 @@ type ImportDialogProps = {
 	onImport: (body: string) => void;
 };
 
+const labelClass = "block font-[family-name:var(--font-cinzel)] text-xs font-semibold tracking-[0.08em] text-[#e1c49a] uppercase";
+const fieldClass = "w-full rounded border border-[#9a7c60]/65 bg-[#17171c] px-3 text-sm text-[#f3e7d3] placeholder:text-[#9d8d8f] shadow-[inset_0_1px_3px_rgba(0,0,0,0.35)] focus-visible:outline-2 focus-visible:outline-[#d5aa70]";
+
 export function ImportDialog(props: ImportDialogProps) {
 	const [encryptedText, setEncryptedText] = createSignal("");
 	const [stage, setStage] = createSignal<"paste" | "password">("paste");
@@ -60,14 +63,14 @@ export function ImportDialog(props: ImportDialogProps) {
 	};
 
 	return (
-		<DialogShell open={props.open} title="Import a letter" titleId="import-dialog-title" onClose={() => {
+		<DialogShell open={props.open} title="Enter the whispers from the raven" titleId="import-dialog-title" variant="raven" onClose={() => {
 			importRun++;
 			setEncryptedText("");
 			setPassword("");
 			setError("");
 			setUnlocking(false);
 			props.onClose();
-		}}>
+			}}>
 			<form class="space-y-5 px-5 py-5 sm:px-6 sm:py-6" onSubmit={event => {
 				event.preventDefault();
 				if (stage() === "paste") continueImport();
@@ -75,22 +78,23 @@ export function ImportDialog(props: ImportDialogProps) {
 			}}>
 				<Show when={stage() === "paste"} fallback={
 					<div class="space-y-2">
-						<p class="text-sm leading-6 text-[#674a35]">Encrypted letter received. Enter its password to read it.</p>
-						<label for="import-password" class="block font-[family-name:var(--font-cinzel)] text-xs font-semibold tracking-[0.08em] uppercase">Password</label>
-						<input id="import-password" class="min-h-12 w-full rounded border border-[#8b6842]/50 bg-[#fff8e8] px-3 text-sm text-[#513528] focus-visible:outline-2 focus-visible:outline-[#8b5d36]" type="text" autocomplete="off" value={password()} onInput={event => { setPassword(event.currentTarget.value); setError(""); }} />
+						<p class="text-sm leading-6 text-[#e2d2be]">The letter is sealed. Enter the password you were given to reveal its message.</p>
+						<label for="import-password" class={labelClass}>Password</label>
+						<input id="import-password" class={`${fieldClass} min-h-12`} type="text" autocomplete="off" value={password()} onInput={event => { setPassword(event.currentTarget.value); setError(""); }} />
 					</div>
 				}>
-					<div class="space-y-2">
-						<label for="import-text" class="block font-[family-name:var(--font-cinzel)] text-xs font-semibold tracking-[0.08em] uppercase">Encrypted letter text</label>
-						<textarea id="import-text" class="w-full resize-y rounded border border-[#8b6842]/50 bg-[#fff8e8] px-3 py-2 font-mono text-xs leading-5 text-[#513528] placeholder:text-[#9b8269] focus-visible:outline-2 focus-visible:outline-[#8b5d36]" rows="6" placeholder="Paste the encrypted text here" value={encryptedText()} onInput={event => { setEncryptedText(event.currentTarget.value); setError(""); }} />
+					<div class="space-y-3">
+						<p class="text-sm leading-6 text-[#e2d2be]">Paste the encrypted letter text you received below. Then select Continue to enter its password.</p>
+						<label for="import-text" class={labelClass}>Encrypted letter text</label>
+						<textarea id="import-text" class={`${fieldClass} resize-y py-2 font-mono text-xs leading-5`} rows="6" placeholder="Paste the encrypted text here" value={encryptedText()} onInput={event => { setEncryptedText(event.currentTarget.value); setError(""); }} />
 					</div>
 				</Show>
-				<Show when={error()}><p class="text-sm text-[#8a3328]" role="alert">{error()}</p></Show>
+				<Show when={error()}><p class="text-sm text-[#ffb5a5]" role="alert">{error()}</p></Show>
 				<div class="flex justify-end gap-2">
 					<Show when={stage() === "password"}>
-						<button class="min-h-11 rounded border border-[#8b6842]/50 px-3 font-[family-name:var(--font-cinzel)] text-xs font-semibold tracking-[0.06em] text-[#513528] uppercase hover:bg-[#e9d4aa] focus-visible:outline-2 focus-visible:outline-[#8b5d36]" type="button" onClick={() => { setStage("paste"); setPassword(""); setError(""); }}>Back</button>
+						<button class="min-h-11 rounded border border-[#a68157]/65 px-3 font-[family-name:var(--font-cinzel)] text-xs font-semibold tracking-[0.06em] text-[#e1c49a] uppercase hover:bg-[#44363b] focus-visible:outline-2 focus-visible:outline-[#d5aa70]" type="button" onClick={() => { setStage("paste"); setPassword(""); setError(""); }}>Back</button>
 					</Show>
-					<button class="min-h-11 rounded border border-[#8b6842] bg-[#513528] px-4 font-[family-name:var(--font-cinzel)] text-xs font-semibold tracking-[0.06em] text-[#f8e9c9] uppercase hover:bg-[#694534] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b5d36] disabled:cursor-wait disabled:opacity-60" type="submit" disabled={unlocking()}>{unlocking() ? "Unlocking…" : stage() === "paste" ? "Continue" : "Unlock letter"}</button>
+					<button class="min-h-11 rounded border border-[#c59a6c] bg-[#a9774e] px-4 font-[family-name:var(--font-cinzel)] text-xs font-semibold tracking-[0.06em] text-[#18161b] uppercase shadow-[inset_0_0_0_2px_rgba(249,224,177,0.12)] hover:bg-[#c08c5e] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d5aa70] disabled:cursor-wait disabled:opacity-60" type="submit" disabled={unlocking()}>{unlocking() ? "Unlocking…" : stage() === "paste" ? "Continue" : "Unlock letter"}</button>
 				</div>
 			</form>
 		</DialogShell>
