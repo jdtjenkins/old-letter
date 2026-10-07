@@ -16,6 +16,8 @@ export function ShareDialog(props: ShareDialogProps) {
 	const [error, setError] = createSignal("");
 	const [urlCopied, setUrlCopied] = createSignal(false);
 	const [encryptedCopied, setEncryptedCopied] = createSignal(false);
+	const [downloadingPdf, setDownloadingPdf] = createSignal(false);
+	const [pdfMessage, setPdfMessage] = createSignal("");
 	let encryptionTimer: ReturnType<typeof setTimeout> | undefined;
 	let encryptionRun = 0;
 
@@ -33,6 +35,8 @@ export function ShareDialog(props: ShareDialogProps) {
 		setError("");
 		setUrlCopied(false);
 		setEncryptedCopied(false);
+		setDownloadingPdf(false);
+		setPdfMessage("");
 	});
 
 	onCleanup(stopEncryption);
@@ -73,6 +77,22 @@ export function ShareDialog(props: ShareDialogProps) {
 		}
 	};
 
+	const downloadPdf = async () => {
+		if (downloadingPdf()) return;
+		setDownloadingPdf(true);
+		setError("");
+		setPdfMessage("");
+		try {
+			const { downloadLetterPdf } = await import("../utils/letterPdf");
+			const { omittedImages } = await downloadLetterPdf(props.body);
+			if (omittedImages) setPdfMessage(`${omittedImages} image${omittedImages === 1 ? "" : "s"} could not be included in the PDF; their descriptions were added instead.`);
+		} catch {
+			setPdfMessage("Could not create the PDF. Please try again.");
+		} finally {
+			setDownloadingPdf(false);
+		}
+	};
+
 	return (
 		<DialogShell open={props.open} title="Share this letter" titleId="share-dialog-title" onClose={() => {
 			stopEncryption();
@@ -88,6 +108,11 @@ export function ShareDialog(props: ShareDialogProps) {
 						<button class="min-h-12 shrink-0 rounded border border-[#8b6842] bg-[#513528] px-3 font-[family-name:var(--font-cinzel)] text-xs font-semibold tracking-[0.06em] text-[#f8e9c9] uppercase hover:bg-[#694534] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b5d36]" type="button" onClick={() => copy(props.url, setUrlCopied, "Could not copy the link. Select the URL and copy it manually.")}>{urlCopied() ? "Copied" : "Copy"}</button>
 					</div>
 				</div>
+				<button class="inline-flex min-h-11 items-center gap-2 rounded border border-[#8b6842] bg-[#f4e6c9] px-4 font-[family-name:var(--font-cinzel)] text-xs font-semibold tracking-[0.06em] text-[#513528] uppercase hover:bg-[#ead6ae] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b5d36] disabled:cursor-wait disabled:opacity-60" type="button" disabled={downloadingPdf()} onClick={downloadPdf}>
+					<svg class="h-4 w-4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-4-4 4 4 4-4M5 18v3h14v-3" /></svg>
+					{downloadingPdf() ? "Preparing PDF…" : "Download to PDF"}
+				</button>
+				<Show when={pdfMessage()}><p class="text-xs leading-5 text-[#8a3328]" role="status">{pdfMessage()}</p></Show>
 				<p class="font-main text-sm">If you want to send an encrypted letter, type a password below. Then copy the encrypted text and send it, along with the password, to your recipient.</p>
 				<div class="space-y-2">
 					<label for="share-password" class="block font-[family-name:var(--font-cinzel)] text-xs font-semibold tracking-[0.08em] uppercase">Password</label>
